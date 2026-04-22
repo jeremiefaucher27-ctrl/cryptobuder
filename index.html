@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRYPTOBUDER</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:#F5C842;--gold-dark:#C9952A;--gold-light:#FDE88A;
+  --green:#00FF88;--red:#FF3B5C;
+  --bg:#0A0A0F;--bg2:#12121A;--bg3:#1A1A26;--bg4:#22223A;
+  --text:#F0EDE8;--muted:#7A7A9A;
+  --border:rgba(245,200,66,0.15);--border-b:rgba(245,200,66,0.4);
+  --fd:'Bebas Neue',sans-serif;--fm:'Space Mono',monospace;--fb:'DM Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(245,200,66,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(245,200,66,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+
+/* ── AUTH SCREEN ── */
+#auth-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0}
+.auth-box{width:100%;max-width:420px;padding:0 1.5rem}
+.auth-logo{font-family:var(--fd);font-size:3rem;letter-spacing:6px;background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dark));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;margin-bottom:.25rem}
+.auth-sub{font-family:var(--fm);font-size:10px;letter-spacing:4px;color:var(--muted);text-align:center;margin-bottom:2.5rem;text-transform:uppercase}
+.auth-tabs{display:flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1.5rem}
+.auth-tab{flex:1;padding:12px;background:transparent;border:none;font-family:var(--fm);font-size:11px;letter-spacing:2px;color:var(--muted);cursor:pointer;transition:all .2s}
+.auth-tab.active{background:rgba(245,200,66,.12);color:var(--gold)}
+.auth-field{margin-bottom:1rem}
+.auth-field label{display:block;font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:6px;text-transform:uppercase}
+.auth-field input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 16px;color:var(--text);font-family:var(--fb);font-size:14px;outline:none;transition:border .2s}
+.auth-field input:focus{border-color:var(--border-b)}
+.auth-btn{width:100%;background:var(--gold);color:var(--bg);border:none;border-radius:8px;padding:14px;font-family:var(--fd);font-size:1.3rem;letter-spacing:4px;cursor:pointer;transition:all .2s;margin-top:.5rem}
+.auth-btn:hover{background:var(--gold-light);transform:scale(1.02)}
+.auth-err{font-family:var(--fm);font-size:11px;color:var(--red);text-align:center;margin-top:12px;min-height:16px;letter-spacing:1px}
+.auth-loading{font-family:var(--fm);font-size:11px;color:var(--muted);text-align:center;margin-top:12px;letter-spacing:2px}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:1rem 0}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-divider span{font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:2px}
+.device-warning{background:rgba(255,59,92,.1);border:1px solid rgba(255,59,92,.3);border-radius:8px;padding:12px 16px;font-family:var(--fm);font-size:11px;color:var(--red);text-align:center;letter-spacing:1px;line-height:1.6;margin-top:12px;display:none}
+
+/* ── APP ── */
+#app{display:none}
+.header{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border-b);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-family:var(--fd);font-size:2rem;letter-spacing:8px;background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dark));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding-right:2px}
+.header-right{display:flex;align-items:center;gap:16px}
+.header-ticker{display:flex;gap:1.2rem;font-family:var(--fm);font-size:10px;color:var(--muted)}
+.ticker-item .up{color:var(--green);font-weight:700}.ticker-item .dn{color:var(--red);font-weight:700}
+.user-chip{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 12px 5px 5px;cursor:pointer;transition:border .2s}
+.user-chip:hover{border-color:var(--border-b)}
+.user-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:10px;font-weight:700}
+.user-name{font-family:var(--fm);font-size:11px;color:var(--text);letter-spacing:1px}
+.logout-btn{background:transparent;border:none;color:var(--muted);font-family:var(--fm);font-size:9px;cursor:pointer;letter-spacing:1px;padding:2px 6px;border-radius:4px;transition:color .2s}
+.logout-btn:hover{color:var(--red)}
+.live-dot-wrap{display:flex;align-items:center;gap:5px;font-family:var(--fm);font-size:10px;color:var(--green);letter-spacing:2px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+.nav{display:flex;padding:0 1.5rem;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:60px;z-index:99;overflow-x:auto}
+.nav-btn{font-family:var(--fm);font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:13px 20px;background:transparent;border:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.nav-btn.active{color:var(--gold);border-bottom:2px solid var(--gold)}
+.nav-btn:hover:not(.active){color:var(--text);background:rgba(245,200,66,.05)}
+
+.page{display:none;padding:1.5rem 1.5rem 80px;position:relative;z-index:1}
+.page.active{display:block;animation:fadein .3s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.section-title{font-family:var(--fd);font-size:2.2rem;letter-spacing:5px;color:var(--gold);margin-bottom:.2rem}
+.section-sub{font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:3px;margin-bottom:2rem;text-transform:uppercase}
+
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.75rem;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5}
+.card-title{font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:1.25rem}
+
+/* ── SIGNAL GRID ── */
+.signal-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:1300px}
+@media(max-width:860px){.signal-grid{grid-template-columns:1fr}}
+.signal-alert{padding:.9rem 1.25rem;border-radius:10px;display:flex;align-items:center;gap:14px;margin-bottom:1.5rem;font-family:var(--fm);font-size:12px;letter-spacing:1px;transition:all .5s}
+
+/* ── GAUGE ── */
+.gauge-container{display:flex;flex-direction:column;align-items:center;gap:.75rem}
+.gauge-svg-wrap{width:270px;height:155px}
+#gauge-svg{width:100%;height:100%}
+.gauge-number{font-family:var(--fd);font-size:3.5rem;letter-spacing:4px;line-height:1;transition:color .5s;text-align:center}
+.gauge-label{font-family:var(--fd);font-size:1.6rem;letter-spacing:4px;margin-top:.2rem;transition:color .5s;text-align:center}
+.gauge-verdict{display:inline-block;font-family:var(--fm);font-size:11px;letter-spacing:2px;padding:7px 18px;border-radius:4px;margin-top:.5rem;font-weight:700;transition:all .5s;text-align:center}
+.sheets-badge{display:flex;align-items:center;gap:8px;margin-top:1rem;font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:2px;justify-content:center}
+.sheets-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+.sheets-badge.error .sheets-dot{background:var(--red);animation:none}
+.sheets-badge.loading .sheets-dot{background:var(--gold)}
+
+/* ── RSPS ── */
+.winner-crown{text-align:center;margin-bottom:1.25rem;padding:1.25rem;background:rgba(245,200,66,.06);border:1px solid var(--gold);border-radius:12px}
+.winner-label{font-family:var(--fm);font-size:9px;letter-spacing:4px;color:var(--muted);margin-bottom:.4rem}
+.winner-name{font-family:var(--fd);font-size:2.8rem;letter-spacing:8px;color:var(--gold);animation:sparkle 2s ease-in-out infinite}
+.winner-sub{font-family:var(--fm);font-size:10px;color:var(--gold-dark);letter-spacing:2px;margin-top:.2rem}
+@keyframes sparkle{0%,100%{text-shadow:0 0 8px rgba(245,200,66,.6)}50%{text-shadow:0 0 24px rgba(245,200,66,1),0 0 48px rgba(245,200,66,.4)}}
+.rsps-list{display:flex;flex-direction:column;gap:.6rem}
+.rsps-row{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;transition:all .25s}
+.rsps-row:hover{border-color:var(--border-b);transform:translateX(3px)}
+.rsps-row.r1{border-color:var(--gold);background:rgba(245,200,66,.08)}
+.rsps-row.r2{border-color:rgba(192,192,192,.35)}
+.rsps-row.r3{border-color:rgba(180,100,40,.35)}
+.rsps-rank{font-family:var(--fd);font-size:1.3rem;width:28px;text-align:center;flex-shrink:0}
+.rsps-info{flex:1}
+.rsps-name{font-family:var(--fm);font-size:13px;font-weight:700;letter-spacing:2px}
+.rsps-full{font-size:10px;color:var(--muted);font-family:var(--fm)}
+.rsps-bar-wrap{flex:2;height:7px;background:var(--bg4);border-radius:4px;overflow:hidden}
+.rsps-bar{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.25,1,.5,1)}
+.rsps-score{font-family:var(--fd);font-size:1.4rem;letter-spacing:2px;min-width:50px;text-align:right;flex-shrink:0}
+
+/* ── FORMATION ── */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;max-width:1100px}
+.form-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.75rem;transition:all .3s;cursor:pointer}
+.form-card:hover{border-color:var(--border-b);transform:translateY(-3px);background:var(--bg3)}
+.fc-icon{font-size:2.2rem;margin-bottom:.75rem}
+.fc-lvl{font-family:var(--fm);font-size:9px;letter-spacing:3px;color:var(--gold);margin-bottom:.4rem;text-transform:uppercase}
+.fc-title{font-family:var(--fd);font-size:1.5rem;letter-spacing:2px;color:var(--text);margin-bottom:.6rem}
+.fc-desc{font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:1.25rem}
+.fc-tags{display:flex;flex-wrap:wrap;gap:5px}
+.fc-tag{font-family:var(--fm);font-size:9px;padding:3px 9px;border-radius:4px;background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);letter-spacing:1px}
+.fc-prog{margin-top:1.25rem;background:var(--bg4);height:3px;border-radius:2px;overflow:hidden}
+.fc-prog-bar{height:100%;background:linear-gradient(90deg,var(--gold-dark),var(--gold));border-radius:2px}
+.fc-prog-lbl{font-family:var(--fm);font-size:9px;color:var(--muted);margin-top:5px;letter-spacing:1px}
+
+/* ── VIP ── */
+.vip-wrap{max-width:820px;margin:0 auto}
+.vip-hero{text-align:center;padding:2.5rem 2rem;background:var(--bg2);border:1px solid var(--gold);border-radius:16px;margin-bottom:2rem;position:relative;overflow:hidden}
+.vip-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(245,200,66,.1),transparent 55%)}
+.vip-badge{display:inline-block;font-family:var(--fm);font-size:9px;letter-spacing:4px;color:var(--gold);border:1px solid var(--gold);padding:5px 18px;border-radius:2px;margin-bottom:1.25rem;text-transform:uppercase}
+.vip-title{font-family:var(--fd);font-size:3.2rem;letter-spacing:6px;color:var(--text);margin-bottom:1.5rem;line-height:1.05}
+.vip-title span{color:var(--gold)}
+.vip-manifesto{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1.75rem;text-align:left;margin-bottom:1.75rem;position:relative;z-index:1}
+.vip-manifesto-title{font-family:var(--fm);font-size:9px;letter-spacing:3px;color:var(--gold);margin-bottom:.9rem;text-transform:uppercase}
+.vip-manifesto p{font-size:13px;color:var(--muted);line-height:1.85;margin-bottom:.9rem}
+.vip-manifesto p:last-child{margin-bottom:0}
+.vip-manifesto strong{color:var(--text);font-weight:500}
+.vip-pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:2rem;position:relative;z-index:1}
+.vip-pillar{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:1.25rem;display:flex;align-items:flex-start;gap:10px}
+.vp-icon{font-size:1.3rem;flex-shrink:0;margin-top:1px}
+.vp-title{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--gold);margin-bottom:4px;text-transform:uppercase}
+.vp-desc{font-size:12px;color:var(--muted);line-height:1.6}
+.vip-cta{display:inline-block;font-family:var(--fd);font-size:1.3rem;letter-spacing:4px;background:var(--gold);color:var(--bg);border:none;padding:16px 44px;border-radius:8px;cursor:pointer;transition:all .2s;position:relative;z-index:1}
+.vip-cta:hover{background:var(--gold-light);transform:scale(1.03);box-shadow:0 0 36px rgba(245,200,66,.3)}
+
+/* ── CHAT (Discord-like) ── */
+.chat-layout{display:flex;height:calc(100vh - 145px);min-height:500px;max-width:1100px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.chat-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.chat-header{padding:.9rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.chat-channel-name{font-family:var(--fm);font-size:13px;color:var(--gold);letter-spacing:2px}
+.online-count{font-size:11px;color:var(--muted);margin-left:auto;font-family:var(--fm)}
+.chat-messages{flex:1;overflow-y:auto;padding:1rem 1.25rem;display:flex;flex-direction:column;gap:0;scrollbar-width:thin;scrollbar-color:var(--bg4) transparent}
+.chat-messages::-webkit-scrollbar{width:4px}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+.analysis-post{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.75rem;margin-bottom:1.25rem;transition:border .2s}
+.analysis-post:hover{border-color:var(--border-b)}
+.analysis-post-header{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
+.analysis-post-avatar{width:38px;height:38px;border-radius:8px;background:rgba(245,200,66,.15);color:var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:13px;font-weight:700;flex-shrink:0}
+.analysis-post-meta{}
+.analysis-post-author{font-family:var(--fm);font-size:12px;color:var(--gold);letter-spacing:1px;font-weight:700}
+.analysis-post-date{font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:2px}
+.analysis-post-title{font-family:var(--fd);font-size:1.6rem;letter-spacing:2px;color:var(--text);margin-bottom:.75rem;line-height:1.2}
+.analysis-post-body{font-size:14px;color:var(--text-muted,#9A9AB0);line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.analysis-post-img{margin-top:1rem;max-width:100%;max-height:400px;border-radius:10px;border:1px solid var(--border);cursor:pointer}
+.analysis-post-file{display:inline-flex;align-items:center;gap:8px;margin-top:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;text-decoration:none;transition:border .2s}
+.analysis-post-file:hover{border-color:var(--border-b)}
+.analysis-post-file-name{font-family:var(--fm);font-size:11px;color:var(--gold)}
+.analysis-post-file-size{font-family:var(--fm);font-size:10px;color:var(--muted)}
+.analysis-tag{display:inline-block;font-family:var(--fm);font-size:9px;letter-spacing:2px;padding:3px 10px;border-radius:4px;margin-right:6px;margin-top:8px}
+.analysis-tag.bullish{background:rgba(0,255,136,.12);color:var(--green);border:1px solid rgba(0,255,136,.25)}
+.analysis-tag.bearish{background:rgba(255,59,92,.12);color:var(--red);border:1px solid rgba(255,59,92,.25)}
+.analysis-tag.neutral{background:rgba(245,200,66,.12);color:var(--gold);border:1px solid rgba(245,200,66,.25)}
+.analysis-compose{background:var(--bg2);border:1px solid var(--border-b);border-radius:14px;padding:1.5rem;margin-bottom:2rem}
+.analysis-compose-title{font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--gold);margin-bottom:1rem;text-transform:uppercase}
+.analysis-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:var(--fb);font-size:14px;outline:none;transition:border .2s;margin-bottom:10px}
+.analysis-input:focus{border-color:var(--border-b)}
+.analysis-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:var(--fb);font-size:14px;outline:none;transition:border .2s;resize:vertical;min-height:120px;margin-bottom:10px;line-height:1.6}
+.analysis-textarea:focus{border-color:var(--border-b)}
+.analysis-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.analysis-tag-select{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:var(--fm);font-size:11px;outline:none;cursor:pointer}
+.analysis-publish-btn{background:var(--gold);color:var(--bg);border:none;border-radius:8px;padding:10px 24px;font-family:var(--fm);font-size:11px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:all .2s;margin-left:auto}
+.analysis-publish-btn:hover{background:var(--gold-light)}
+.analysis-attach-label{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:var(--fm);font-size:11px;color:var(--muted);cursor:pointer;letter-spacing:1px;transition:all .2s}
+.analysis-attach-label:hover{border-color:var(--border-b);color:var(--text)}
+.analysis-empty{text-align:center;padding:4rem 2rem;font-family:var(--fm);font-size:11px;color:var(--muted);letter-spacing:3px}
+.member-row{display:grid;grid-template-columns:40px 1fr 1fr 1fr;gap:0;padding:12px 16px;border-bottom:1px solid var(--border);transition:background .2s;align-items:center}
+.member-row:hover{background:var(--bg3)}
+.member-row:last-child{border-bottom:none}
+.member-num{font-family:var(--fm);font-size:11px;color:var(--muted)}
+.member-pseudo{font-family:var(--fm);font-size:13px;font-weight:700;letter-spacing:1px;display:flex;align-items:center;gap:8px}
+.member-avatar-sm{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:10px;font-weight:700;flex-shrink:0}
+.member-email{font-size:13px;color:var(--muted);font-family:var(--fm);font-size:11px;letter-spacing:.5px}
+.member-date{font-family:var(--fm);font-size:11px;color:var(--muted)}
+
+/* Message groups */
+.msg-group{padding:6px 0;display:flex;gap:12px}
+.msg-group:hover{background:rgba(255,255,255,.015);border-radius:6px;margin:0 -6px;padding:6px 6px}
+.msg-avatar-col{flex-shrink:0;width:38px}
+.msg-avatar-img{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:13px;font-weight:700}
+.msg-avatar-img img{width:38px;height:38px;border-radius:50%;object-fit:cover}
+.msg-body{flex:1;min-width:0}
+.msg-header-row{display:flex;align-items:baseline;gap:8px;margin-bottom:3px}
+.msg-username{font-family:var(--fm);font-size:13px;font-weight:700;letter-spacing:.5px}
+.msg-timestamp{font-family:var(--fm);font-size:10px;color:var(--muted)}
+.msg-text{font-size:14px;color:var(--text);line-height:1.6;word-break:break-word}
+.msg-text a{color:var(--gold);text-decoration:none}
+.msg-text a:hover{text-decoration:underline}
+
+/* Image in chat */
+.msg-image{margin-top:8px;max-width:400px;max-height:300px;border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:opacity .2s}
+.msg-image:hover{opacity:.9}
+.msg-file{display:inline-flex;align-items:center;gap:8px;margin-top:8px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;text-decoration:none;transition:border .2s;max-width:300px}
+.msg-file:hover{border-color:var(--border-b)}
+.msg-file-icon{font-size:1.3rem;flex-shrink:0}
+.msg-file-info{}
+.msg-file-name{font-family:var(--fm);font-size:12px;color:var(--gold);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.msg-file-size{font-family:var(--fm);font-size:10px;color:var(--muted)}
+
+.msg-continuation{padding:2px 0 2px 50px;display:flex;gap:0}
+.msg-continuation .msg-body{flex:1}
+.msg-continuation .msg-text{font-size:14px;color:var(--text);line-height:1.6}
+.msg-time-hover{font-family:var(--fm);font-size:9px;color:transparent;width:38px;display:flex;align-items:center;justify-content:flex-end;transition:color .2s;flex-shrink:0;padding-right:4px;font-size:9px}
+.msg-continuation:hover .msg-time-hover{color:var(--muted)}
+
+.chat-divider{text-align:center;font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:3px;padding:10px 0;display:flex;align-items:center;gap:12px;margin:4px 0}
+.chat-divider::before,.chat-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Typing indicator */
+.typing-indicator{font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:1px;padding:4px 1.25rem 8px;height:24px;flex-shrink:0}
+
+/* Input area */
+.chat-input-wrap{padding:.9rem 1.25rem;border-top:1px solid var(--border);flex-shrink:0}
+.chat-input-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;display:flex;align-items:flex-end;gap:10px;padding:10px 14px;transition:border .2s}
+.chat-input-box:focus-within{border-color:var(--border-b)}
+.chat-attach-btn{background:transparent;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;padding:2px;transition:color .2s;flex-shrink:0;margin-bottom:2px}
+.chat-attach-btn:hover{color:var(--gold)}
+#chat-file-input{display:none}
+.chat-text-area{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--fb);font-size:14px;resize:none;max-height:120px;line-height:1.5;padding:0}
+.chat-text-area::placeholder{color:var(--muted)}
+.chat-send-btn{background:var(--gold);color:var(--bg);border:none;border-radius:7px;padding:8px 16px;font-family:var(--fm);font-size:10px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:all .2s;flex-shrink:0;margin-bottom:0}
+.chat-send-btn:hover{background:var(--gold-light)}
+.chat-send-btn:disabled{opacity:.4;cursor:not-allowed}
+.attach-preview{display:flex;flex-wrap:wrap;gap:8px;padding:.5rem 1.25rem 0}
+.attach-item{position:relative;display:inline-flex}
+.attach-thumb{width:60px;height:60px;object-fit:cover;border-radius:6px;border:1px solid var(--border)}
+.attach-file-pill{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-family:var(--fm);font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px;max-width:180px}
+.attach-file-pill span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.attach-remove{position:absolute;top:-5px;right:-5px;background:var(--red);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+
+/* Image lightbox */
+#lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;align-items:center;justify-content:center;cursor:pointer}
+#lightbox.open{display:flex}
+#lightbox img{max-width:90vw;max-height:90vh;border-radius:8px}
+
+/* MARQUEE */
+.marquee-wrap{background:rgba(10,10,15,.95);border-top:1px solid var(--border-b);padding:7px 0;overflow:hidden;position:fixed;bottom:0;left:0;right:0;z-index:50}
+.marquee-track{display:flex;white-space:nowrap;animation:marquee 45s linear infinite}
+.marquee-item{font-family:var(--fm);font-size:10px;padding:0 2rem;color:var(--muted);letter-spacing:1px}
+.marquee-item .up{color:var(--green);font-weight:700}.marquee-item .dn{color:var(--red);font-weight:700}
+.marquee-item .sym{color:var(--gold)}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+.analysis-post{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.75rem;margin-bottom:1.25rem;transition:border .2s}
+.analysis-post:hover{border-color:var(--border-b)}
+.analysis-post-header{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
+.analysis-post-avatar{width:38px;height:38px;border-radius:8px;background:rgba(245,200,66,.15);color:var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:13px;font-weight:700;flex-shrink:0}
+.analysis-post-meta{}
+.analysis-post-author{font-family:var(--fm);font-size:12px;color:var(--gold);letter-spacing:1px;font-weight:700}
+.analysis-post-date{font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:2px}
+.analysis-post-title{font-family:var(--fd);font-size:1.6rem;letter-spacing:2px;color:var(--text);margin-bottom:.75rem;line-height:1.2}
+.analysis-post-body{font-size:14px;color:var(--text-muted,#9A9AB0);line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.analysis-post-img{margin-top:1rem;max-width:100%;max-height:400px;border-radius:10px;border:1px solid var(--border);cursor:pointer}
+.analysis-post-file{display:inline-flex;align-items:center;gap:8px;margin-top:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;text-decoration:none;transition:border .2s}
+.analysis-post-file:hover{border-color:var(--border-b)}
+.analysis-post-file-name{font-family:var(--fm);font-size:11px;color:var(--gold)}
+.analysis-post-file-size{font-family:var(--fm);font-size:10px;color:var(--muted)}
+.analysis-tag{display:inline-block;font-family:var(--fm);font-size:9px;letter-spacing:2px;padding:3px 10px;border-radius:4px;margin-right:6px;margin-top:8px}
+.analysis-tag.bullish{background:rgba(0,255,136,.12);color:var(--green);border:1px solid rgba(0,255,136,.25)}
+.analysis-tag.bearish{background:rgba(255,59,92,.12);color:var(--red);border:1px solid rgba(255,59,92,.25)}
+.analysis-tag.neutral{background:rgba(245,200,66,.12);color:var(--gold);border:1px solid rgba(245,200,66,.25)}
+.analysis-compose{background:var(--bg2);border:1px solid var(--border-b);border-radius:14px;padding:1.5rem;margin-bottom:2rem}
+.analysis-compose-title{font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--gold);margin-bottom:1rem;text-transform:uppercase}
+.analysis-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:var(--fb);font-size:14px;outline:none;transition:border .2s;margin-bottom:10px}
+.analysis-input:focus{border-color:var(--border-b)}
+.analysis-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:var(--fb);font-size:14px;outline:none;transition:border .2s;resize:vertical;min-height:120px;margin-bottom:10px;line-height:1.6}
+.analysis-textarea:focus{border-color:var(--border-b)}
+.analysis-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.analysis-tag-select{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:var(--fm);font-size:11px;outline:none;cursor:pointer}
+.analysis-publish-btn{background:var(--gold);color:var(--bg);border:none;border-radius:8px;padding:10px 24px;font-family:var(--fm);font-size:11px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:all .2s;margin-left:auto}
+.analysis-publish-btn:hover{background:var(--gold-light)}
+.analysis-attach-label{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:var(--fm);font-size:11px;color:var(--muted);cursor:pointer;letter-spacing:1px;transition:all .2s}
+.analysis-attach-label:hover{border-color:var(--border-b);color:var(--text)}
+.analysis-empty{text-align:center;padding:4rem 2rem;font-family:var(--fm);font-size:11px;color:var(--muted);letter-spacing:3px}
+.member-row{display:grid;grid-template-columns:40px 1fr 1fr 1fr;gap:0;padding:12px 16px;border-bottom:1px solid var(--border);transition:background .2s;align-items:center}
+.member-row:hover{background:var(--bg3)}
+.member-row:last-child{border-bottom:none}
+.member-num{font-family:var(--fm);font-size:11px;color:var(--muted)}
+.member-pseudo{font-family:var(--fm);font-size:13px;font-weight:700;letter-spacing:1px;display:flex;align-items:center;gap:8px}
+.member-avatar-sm{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:10px;font-weight:700;flex-shrink:0}
+.member-email{font-size:13px;color:var(--muted);font-family:var(--fm);font-size:11px;letter-spacing:.5px}
+.member-date{font-family:var(--fm);font-size:11px;color:var(--muted)}
+
+/* Spinner */
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ AUTH SCREEN ══════════════ -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">CB</div>
+    <div class="auth-sub">La plateforme des bâtisseurs de fortune</div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">CONNEXION</button>
+      <button class="auth-tab" onclick="switchTab('register')">INSCRIPTION</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="tab-login">
+      <div class="auth-field">
+        <label>Adresse email</label>
+        <input type="email" id="login-email" placeholder="ton@email.com" onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <div class="auth-field">
+        <label>Mot de passe</label>
+        <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <button class="auth-btn" onclick="doLogin()">SE CONNECTER</button>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="tab-register" style="display:none">
+      <div class="auth-field">
+        <label>Ton pseudo (définitif)</label>
+        <input type="text" id="reg-pseudo" placeholder="SatoshiKing" maxlength="20" onkeydown="if(event.key==='Enter')doRegister()"/>
+      </div>
+      <div class="auth-field">
+        <label>Adresse email</label>
+        <input type="email" id="reg-email" placeholder="ton@email.com" onkeydown="if(event.key==='Enter')doRegister()"/>
+      </div>
+      <div class="auth-field">
+        <label>Mot de passe</label>
+        <input type="password" id="reg-pass" placeholder="Min. 6 caractères" onkeydown="if(event.key==='Enter')doRegister()"/>
+      </div>
+      <button class="auth-btn" onclick="doRegister()">CRÉER MON COMPTE</button>
+    </div>
+
+    <div class="auth-err" id="auth-err"></div>
+    <div class="auth-loading" id="auth-loading" style="display:none"><span class="spin"></span> Connexion en cours...</div>
+    <div class="device-warning" id="device-warning">
+      ! Limite atteinte — Cet email est déjà connecté sur 2 appareils.<br>Déconnecte-toi sur un autre appareil pour continuer.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ APP ══════════════ -->
+<div id="app">
+
+  <header class="header">
+    <div class="logo">CB</div>
+    <div class="header-right">
+      <div class="header-ticker" id="header-ticker"></div>
+      <div class="live-dot-wrap"><div class="live-dot"></div>LIVE</div>
+      <div class="user-chip" id="user-chip">
+        <div class="user-avatar" id="header-avatar"></div>
+        <span class="user-name" id="header-username"></span>
+        <button class="logout-btn" onclick="doLogout()">x</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showPage('signal',this)">SIGNAL</button>
+    <button class="nav-btn" onclick="showPage('formation',this)">FORMATION</button>
+    <button class="nav-btn" onclick="showPage('vip',this)">CONSTRUCTION VIP</button>
+    <button class="nav-btn" onclick="showPage('chat',this)">CHAT</button>
+    <button class="nav-btn" onclick="showPage('analysis',this)">BUDERANALYSIS</button>
+    <button class="nav-btn" id="admin-page-btn" onclick="showPage('members',this)" style="display:none;color:var(--gold);border-bottom:2px solid transparent">MEMBRES</button>
+  </nav>
+
+  <!-- ── SIGNAL ── -->
+  <div class="page active" id="page-signal">
+    <div class="section-title">SIGNAL</div>
+    <div class="section-sub">Données lues depuis Google Sheets en temps réel</div>
+    <div class="signal-alert" id="signal-alert"></div>
+    <div class="signal-grid">
+
+      <div class="card">
+        <div class="card-title">BUDER TREND BENDER — TENDANCE DU MARCHÉ</div>
+        <div style="display:flex;align-items:center;gap:2rem;padding:.5rem 0;min-height:320px">
+
+          <!-- Barre verticale -->
+          <div style="display:flex;gap:12px;align-items:stretch;flex-shrink:0">
+            <!-- La barre -->
+            <div style="position:relative;width:52px;height:300px">
+              <!-- Track background -->
+              <div style="position:absolute;inset:0;background:var(--bg3);border-radius:26px;border:1px solid var(--border)"></div>
+              <!-- Zone verte haut -->
+              <div style="position:absolute;top:1px;left:1px;right:1px;height:49%;background:rgba(0,255,136,0.07);border-radius:25px 25px 0 0"></div>
+              <!-- Zone rouge bas -->
+              <div style="position:absolute;bottom:1px;left:1px;right:1px;height:49%;background:rgba(255,59,92,0.07);border-radius:0 0 25px 25px"></div>
+              <!-- Ligne zéro -->
+              <div style="position:absolute;top:50%;left:8px;right:8px;height:1px;background:rgba(245,200,66,0.5)"></div>
+              <!-- Fill coloré -->
+              <div id="btb-fill" style="position:absolute;left:8px;right:8px;border-radius:8px;transition:all 0.5s ease;height:0px;top:150px"></div>
+              <!-- Curseur -->
+              <div id="btb-marker" style="position:absolute;left:6px;right:6px;height:10px;border-radius:5px;background:#F5C842;top:145px;transition:top 0.5s ease,background 0.3s ease,box-shadow 0.3s ease;box-shadow:0 0 12px rgba(245,200,66,0.8);z-index:3"></div>
+            </div>
+            <!-- Graduations -->
+            <div style="display:flex;flex-direction:column;justify-content:space-between;padding:4px 0;height:300px">
+              <div style="font-family:var(--fm);font-size:9px;color:var(--green);letter-spacing:1px">+1.0</div>
+              <div style="font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:1px">+0.5</div>
+              <div style="font-family:var(--fm);font-size:9px;color:var(--gold);letter-spacing:1px;font-weight:700">0</div>
+              <div style="font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:1px">-0.5</div>
+              <div style="font-family:var(--fm);font-size:9px;color:var(--red);letter-spacing:1px">-1.0</div>
+            </div>
+          </div>
+
+          <!-- Valeurs à droite -->
+          <div style="flex:1;display:flex;flex-direction:column;gap:1.25rem">
+            <div>
+              <div style="font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:3px;margin-bottom:6px">VALEUR BTB</div>
+              <div class="gauge-number" id="gauge-number">0.00</div>
+            </div>
+            <div>
+              <div class="gauge-label" id="gauge-label">EN ATTENTE</div>
+              <div class="gauge-verdict" id="gauge-verdict" style="background:rgba(122,122,154,.1);color:var(--muted);border:1px solid var(--border);margin-top:.5rem">CHARGEMENT...</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:.25rem">
+              <div id="btb-sync-dot" style="width:6px;height:6px;border-radius:50%;background:var(--muted)"></div>
+              <span id="sheets-status" style="font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:1px">Chargement...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">BUDER MOON CHASER — TOURNOI DES CRYPTOS</div>
+        <div class="winner-crown">
+          <div class="winner-label">LEADER DU MARCHÉ</div>
+          <div class="winner-name" id="winner-name">—</div>
+          <div class="winner-sub" id="winner-sub">Chargement...</div>
+        </div>
+        <div class="rsps-list" id="rsps-list"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN FLOATING PANEL -->
+    <div style="position:fixed;bottom:80px;right:24px;z-index:200">
+      <button onclick="toggleAdminPanel()" style="background:var(--bg2);border:1px solid var(--border-b);color:var(--gold);font-family:var(--fm);font-size:10px;letter-spacing:2px;padding:10px 16px;border-radius:8px;cursor:pointer;transition:all .2s" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='var(--bg2)'">ADMIN</button>
+      <div id="admin-panel" style="display:none;position:absolute;bottom:48px;right:0;width:340px;background:var(--bg2);border:1px solid var(--border-b);border-radius:14px;padding:1.25rem;box-shadow:0 8px 40px rgba(0,0,0,.6);flex-direction:column;gap:12px">
+        <div style="font-family:var(--fm);font-size:11px;letter-spacing:3px;color:var(--gold);margin-bottom:4px">PANNEAU ADMIN</div>
+
+        <!-- PIN -->
+        <div id="admin-pin-section">
+          <div style="font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px">ENTRER LE CODE PIN</div>
+          <div style="display:flex;gap:8px">
+            <input id="admin-pin-input" type="password" maxlength="8" placeholder="••••••" onkeydown="if(event.key==='Enter')checkAdminPin()"
+              style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--gold);font-family:var(--fm);font-size:14px;letter-spacing:4px;outline:none"/>
+            <button onclick="checkAdminPin()" style="background:var(--gold);color:var(--bg);border:none;border-radius:7px;padding:9px 16px;font-family:var(--fm);font-size:11px;font-weight:700;cursor:pointer">OK</button>
+          </div>
+        </div>
+
+        <!-- CONTROLS (hidden until PIN ok) -->
+        <div id="admin-controls" style="display:none">
+          <!-- BTB -->
+          <div style="margin-bottom:14px">
+            <div style="font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px">BUDER TREND BENDER</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <input type="range" id="admin-btb-val" min="-1" max="1" step="0.01" value="0" style="flex:1"
+                oninput="document.getElementById('admin-btb-display').textContent=parseFloat(this.value).toFixed(2)"/>
+              <span id="admin-btb-display" style="font-family:var(--fm);font-size:16px;color:var(--gold);min-width:44px;text-align:right">0.00</span>
+            </div>
+          </div>
+          <!-- RSPS -->
+          <div style="margin-bottom:14px">
+            <div style="font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:10px">SCORES BUDER MOON CHASER</div>
+            <div id="admin-rsps-inputs"></div>
+          </div>
+          <!-- Save -->
+          <button onclick="applyAdminChanges()" style="width:100%;background:var(--gold);color:var(--bg);border:none;border-radius:8px;padding:11px;font-family:var(--fm);font-size:11px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:all .2s" onmouseover="this.style.background='var(--gold-light)'" onmouseout="this.style.background='var(--gold)'">APPLIQUER LES CHANGEMENTS ↗</button>
+          <div id="admin-save-msg" style="display:none;text-align:center;font-family:var(--fm);font-size:10px;color:var(--green);letter-spacing:2px;margin-top:8px">SAUVEGARDÉ ET DIFFUSÉ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FORMATION ── -->
+  <div class="page" id="page-formation">
+    <div class="section-title">FORMATION</div>
+    <div class="section-sub">Les fondations pour maîtriser le système CRYPTOBUDER</div>
+    <div class="form-grid">
+      <div class="form-card">
+        <div class="fc-lvl">MODULE 01</div>
+        <div class="fc-title">FORMATION BLOCKCHAIN</div>
+        <div class="fc-desc">Comprends ce qu'est réellement la blockchain : réseaux décentralisés, wallets, validation des transactions, et pourquoi cette technologie redéfinit les règles de la finance mondiale.</div>
+        <div class="fc-tags"><span class="fc-tag">BLOCKCHAIN</span><span class="fc-tag">WALLET</span><span class="fc-tag">TRANSACTIONS</span><span class="fc-tag">DeFi</span><span class="fc-tag">NODES</span></div>
+        <div class="fc-prog"><div class="fc-prog-bar" style="width:60%"></div></div>
+        <div class="fc-prog-lbl">60% COMPLÉTÉ</div>
+      </div>
+      <div class="form-card">
+        <div class="fc-lvl">MODULE 02</div>
+        <div class="fc-title">BUDER MOON CHASER</div>
+        <div class="fc-desc">Le tournoi qui définit ta prochaine position. Scoring BMC, rotations de domination, momentum des cryptos — apprends à lire le classement et décider quelle crypto acheter quand le BTB est positif.</div>
+        <div class="fc-tags"><span class="fc-tag">SCORING BMC</span><span class="fc-tag">ROTATION</span><span class="fc-tag">MOMENTUM</span><span class="fc-tag">DOMINANCE</span></div>
+        <div class="fc-prog"><div class="fc-prog-bar" style="width:35%"></div></div>
+        <div class="fc-prog-lbl">35% COMPLÉTÉ</div>
+      </div>
+      <div class="form-card">
+        <div class="fc-lvl">MODULE 03</div>
+        <div class="fc-title">PSYCHOLOGIE DE L'INVESTISSEUR</div>
+        <div class="fc-desc">Le marché crypto est une guerre psychologique. FOMO, FUD, biais cognitifs, panique de marché — développe la discipline en béton pour suivre le système même quand tes émotions crient le contraire.</div>
+        <div class="fc-tags"><span class="fc-tag">FOMO</span><span class="fc-tag">FUD</span><span class="fc-tag">DISCIPLINE</span><span class="fc-tag">BIAIS</span><span class="fc-tag">MINDSET</span></div>
+        <div class="fc-prog"><div class="fc-prog-bar" style="width:15%"></div></div>
+        <div class="fc-prog-lbl">15% COMPLÉTÉ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── VIP ── -->
+  <div class="page" id="page-vip">
+    <div class="vip-wrap">
+      <div class="vip-hero">
+        <div class="vip-badge">PROGRAMME EXCLUSIF</div>
+        <div class="vip-title">CONSTRUCTION <span>VIP</span></div>
+        <div class="vip-manifesto">
+          <div class="vip-manifesto-title">LA VISION</div>
+          <p>Le but de Construction VIP n'est pas de te rendre dépendant de CRYPTOBUDER pour toujours. <strong>C'est de bâtir ta propre stratégie</strong> — une stratégie que tu comprends, que tu maîtrises, et que tu peux exécuter seul, les yeux fermés.</p>
+          <p>Trop d'investisseurs suivent des signaux sans comprendre pourquoi. Ils copient sans apprendre. Quand le signal disparaît, <strong>ils sont perdus</strong>. Ce programme existe pour que ça n'arrive jamais.</p>
+          <p>À la fin du programme VIP, tu seras capable de lire le marché toi-même, de construire ton propre système de scoring, de gérer ta psychologie sous pression — et de ne plus avoir besoin de personne. <strong>L'objectif : ton indépendance totale.</strong></p>
+        </div>
+        <div class="vip-pillars">
+          <div class="vip-pillar"><div class="vp-icon" style="width:24px;height:24px;background:rgba(245,200,66,.15);border-radius:4px;flex-shrink:0"></div><div><div class="vp-title">Construire ton système</div><div class="vp-desc">Ton propre framework d'analyse, calibré sur ton profil de risque et tes objectifs.</div></div></div>
+          <div class="vip-pillar"><div class="vp-icon" style="width:24px;height:24px;background:rgba(245,200,66,.15);border-radius:4px;flex-shrink:0"></div><div><div class="vp-title">Règles d'entrée & sortie</div><div class="vp-desc">Des règles claires et non-négociables définies avant même d'ouvrir le trade.</div></div></div>
+          <div class="vip-pillar"><div class="vp-icon" style="width:24px;height:24px;background:rgba(245,200,66,.15);border-radius:4px;flex-shrink:0"></div><div><div class="vp-title">Gestion du risque</div><div class="vp-desc">Protéger son capital d'abord. Survivre aux corrections pour saisir les opportunités.</div></div></div>
+          <div class="vip-pillar"><div class="vp-icon" style="width:24px;height:24px;background:rgba(245,200,66,.15);border-radius:4px;flex-shrink:0"></div><div><div class="vp-title">Backtesting personnel</div><div class="vp-desc">Valider ta stratégie sur données historiques avant de risquer un seul dollar.</div></div></div>
+          <div class="vip-pillar"><div class="vp-icon" style="width:24px;height:24px;background:rgba(245,200,66,.15);border-radius:4px;flex-shrink:0"></div><div><div class="vp-title">Journal de trading</div><div class="vp-desc">Analyser ses erreurs, corriger ses biais, progresser de façon mesurable.</div></div></div>
+          <div class="vip-pillar"><div class="vp-icon" style="width:24px;height:24px;background:rgba(245,200,66,.15);border-radius:4px;flex-shrink:0"></div><div><div class="vp-title">Évolution continue</div><div class="vp-desc">Le marché change. Ton système doit évoluer avec lui, sans jamais perdre sa rigueur.</div></div></div>
+        </div>
+        <button class="vip-cta" onclick="alert('Merci ! On te contacte dans 24h.')">REJOINDRE LE PROGRAMME VIP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CHAT ── -->
+  <div class="page" id="page-chat">
+    <div class="chat-layout">
+      <div class="chat-main">
+        <div class="chat-header">
+          <span style="color:var(--gold);font-size:1.1rem">#</span>
+          <span class="chat-channel-name">ANALYSES — CRYPTOBUDER</span>
+          <span class="online-count" id="online-count"></span>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+          <div style="text-align:center;padding:2rem;font-family:var(--fm);font-size:11px;color:var(--muted);letter-spacing:2px">
+            <span class="spin"></span> Chargement des messages...
+          </div>
+        </div>
+        <div class="typing-indicator" id="typing-indicator"></div>
+        <div class="attach-preview" id="attach-preview"></div>
+        <div class="chat-input-wrap">
+          <div class="chat-input-box">
+            <label for="chat-file-input" style="cursor:pointer;font-size:1.2rem;color:var(--muted);padding:2px;margin-bottom:2px;display:flex;align-items:center" title="Joindre" style="font-family:var(--fm);font-size:11px;letter-spacing:1px;color:var(--muted);padding:4px 8px;border:1px solid var(--border);border-radius:6px;transition:all .2s">JOINDRE</label>
+            <input type="file" id="chat-file-input" multiple accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" style="display:none" onchange="handleFileAttach(this.files)"/>
+            <textarea class="chat-text-area" id="chat-input" placeholder="Écris ton analyse, signal ou observation..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+            <button class="chat-send-btn" id="chat-send-btn" onclick="sendMessage()">ENVOYER ↗</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BUDERANALYSIS ── -->
+  <div class="page" id="page-analysis">
+    <div class="section-title">BUDERANALYSIS</div>
+    <div class="section-sub">Journal d'analyses — mis à jour par l'équipe CRYPTOBUDER</div>
+
+    <div style="max-width:860px">
+      <!-- Composer — admin only -->
+      <div class="analysis-compose" id="analysis-compose" style="display:none">
+        <div class="analysis-compose-title">Nouvelle analyse</div>
+        <input class="analysis-input" id="analysis-title-input" placeholder="Titre de l'analyse (ex: BTC — Setup haussier semaine 17)"/>
+        <textarea class="analysis-textarea" id="analysis-body-input" placeholder="Développe ton analyse ici...&#10;&#10;Contexte du marché, niveaux clés, biais, trade setup..."></textarea>
+        <div class="analysis-toolbar">
+          <select class="analysis-tag-select" id="analysis-tag-select">
+            <option value="bullish">HAUSSIER</option>
+            <option value="bearish">BAISSIER</option>
+            <option value="neutral">NEUTRE</option>
+          </select>
+          <label class="analysis-attach-label" for="analysis-file-input">JOINDRE</label>
+          <input type="file" id="analysis-file-input" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" style="display:none" onchange="handleAnalysisFile(this.files)"/>
+          <button class="analysis-publish-btn" onclick="publishAnalysis()">PUBLIER L'ANALYSE</button>
+        </div>
+        <div id="analysis-attach-preview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
+      </div>
+
+      <!-- Posts list -->
+      <div id="analysis-posts">
+        <div class="analysis-empty"><span class="spin"></span> Chargement des analyses...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MEMBRES (ADMIN ONLY) ── -->
+  <div class="page" id="page-members">
+    <div class="section-title">MEMBRES</div>
+    <div class="section-sub">Gestion des membres inscrits — vue admin uniquement</div>
+
+    <div style="max-width:900px">
+      <!-- Stats bar -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center">
+          <div style="font-family:var(--fd);font-size:2.5rem;color:var(--gold)" id="stat-total">0</div>
+          <div style="font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:4px">MEMBRES TOTAL</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center">
+          <div style="font-family:var(--fd);font-size:2.5rem;color:var(--green)" id="stat-today">0</div>
+          <div style="font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:4px">INSCRITS AUJOURD'HUI</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center">
+          <div style="font-family:var(--fd);font-size:2.5rem;color:var(--gold)" id="stat-week">0</div>
+          <div style="font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:4px">CETTE SEMAINE</div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+        
+        <input id="member-search" type="text" placeholder="Rechercher par pseudo ou email..."
+          style="flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--fb);font-size:14px"
+          oninput="filterMembers(this.value)"/>
+      </div>
+
+      <!-- Table header -->
+      <div style="display:grid;grid-template-columns:40px 1fr 1fr 1fr;gap:0;background:var(--bg3);border:1px solid var(--border);border-radius:10px 10px 0 0;padding:10px 16px">
+        <div style="font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:2px">#</div>
+        <div style="font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:2px">PSEUDO</div>
+        <div style="font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:2px">EMAIL</div>
+        <div style="font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:2px">INSCRIT LE</div>
+      </div>
+
+      <!-- Members list -->
+      <div id="members-list" style="background:var(--bg2);border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;overflow:hidden">
+        <div style="text-align:center;padding:2rem;font-family:var(--fm);font-size:11px;color:var(--muted);letter-spacing:2px">
+          <span class="spin"></span> Chargement des membres...
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" src="" alt=""/></div>
+
+<!-- Marquee -->
+<div class="marquee-wrap"><div class="marquee-track" id="marquee-track"></div></div>
+
+<!-- ══════════════ FIREBASE + APP LOGIC ══════════════ -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp, doc, setDoc, getDoc, deleteDoc, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCMrdS-VVqH6RS1xVUrhMs11msrD5EHhRw",
+  authDomain: "cryptobuder.firebaseapp.com",
+  projectId: "cryptobuder",
+  storageBucket: "cryptobuder.firebasestorage.app",
+  messagingSenderId: "60934722572",
+  appId: "1:60934722572:web:9ef4407428564b0c534a29"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
+// ── CONFIG ──
+const ADMIN_PIN = '2025'; // ← Change ce PIN dans le code
+const ADMIN_EMAIL = 'jeremie.faucher27@gmail.com'; // ← Ton email admin
+const MAX_DEVICES = 2;
+const DEVICE_ID = localStorage.getItem('cb_device_id') || (() => {
+  const id = 'dev_' + Math.random().toString(36).slice(2);
+  localStorage.setItem('cb_device_id', id);
+  return id;
+})();
+
+// ── SIGNAL DATA (sauvegardé dans Firestore pour tous les users) ──
+let adminUnlocked = false;
+
+// Données par défaut
+let signalData = {
+  btb: 0,
+  cryptos: [
+    { name:'BTC',  score:24 },
+    { name:'ETH',  score:21 },
+    { name:'SOL',  score:18 },
+    { name:'BNB',  score:14 },
+    { name:'SUI',  score:11 },
+    { name:'DOGE', score:9  },
+    { name:'XRP',  score:6  },
+    { name:'HYPE', score:3  },
+  ]
+};
+
+const cryptoMeta = {
+  BTC:  { fullName:'Bitcoin',     color:'#F7931A', geckoId:'bitcoin' },
+  ETH:  { fullName:'Ethereum',    color:'#627EEA', geckoId:'ethereum' },
+  SOL:  { fullName:'Solana',      color:'#9945FF', geckoId:'solana' },
+  BNB:  { fullName:'BNB',         color:'#F3BA2F', geckoId:'binancecoin' },
+  SUI:  { fullName:'Sui',         color:'#4CA3FF', geckoId:'sui' },
+  DOGE: { fullName:'Dogecoin',    color:'#C2A633', geckoId:'dogecoin' },
+  XRP:  { fullName:'Ripple',      color:'#346AA9', geckoId:'ripple' },
+  HYPE: { fullName:'Hyperliquid', color:'#00E5FF', geckoId:'hyperliquid' },
+};
+
+let currentUser = null;
+let currentUserData = null;
+let pendingFiles = [];
+let chatUnsub = null;
+let lastSenderId = null;
+let lastSendTime = 0;
+
+// ── AUTH TABS ──
+window.switchTab = function(tab) {
+  document.querySelectorAll('.auth-tab').forEach((b,i) => b.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('tab-login').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('tab-register').style.display = tab==='register' ? 'block' : 'none';
+  setAuthErr('');
+};
+
+function setAuthErr(msg) {
+  document.getElementById('auth-err').textContent = msg;
+  document.getElementById('auth-loading').style.display = 'none';
+  document.getElementById('device-warning').style.display = 'none';
+}
+function showAuthLoading() {
+  document.getElementById('auth-loading').style.display = 'block';
+  document.getElementById('auth-err').textContent = '';
+}
+
+// ── REGISTER ──
+window.doRegister = async function() {
+  const pseudo = document.getElementById('reg-pseudo').value.trim();
+  const email  = document.getElementById('reg-email').value.trim();
+  const pass   = document.getElementById('reg-pass').value;
+  if (!pseudo || pseudo.length < 2) return setAuthErr('Pseudo trop court (min. 2 caractères)');
+  if (!email) return setAuthErr('Email requis');
+  if (pass.length < 6) return setAuthErr('Mot de passe trop court (min. 6 caractères)');
+  showAuthLoading();
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await updateProfile(cred.user, { displayName: pseudo });
+    await setDoc(doc(db,'users', cred.user.uid), { pseudo, email, createdAt: serverTimestamp(), devices: [] });
+    setAuthErr('');
+  } catch(e) {
+    setAuthErr(friendlyErr(e.code));
+  }
+};
+
+// ── LOGIN ──
+window.doLogin = async function() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  if (!email || !pass) return setAuthErr('Email et mot de passe requis');
+  showAuthLoading();
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+    setAuthErr('');
+  } catch(e) {
+    setAuthErr(friendlyErr(e.code));
+  }
+};
+
+// ── LOGOUT ──
+window.doLogout = async function() {
+  if (!currentUser) return;
+  try {
+    await deleteDoc(doc(db,'sessions', currentUser.uid + '_' + DEVICE_ID));
+  } catch(e) {}
+  await signOut(auth);
+};
+
+function friendlyErr(code) {
+  const map = {
+    'auth/email-already-in-use':'Cet email est déjà utilisé.',
+    'auth/invalid-email':'Email invalide.',
+    'auth/weak-password':'Mot de passe trop faible.',
+    'auth/wrong-password':'Mot de passe incorrect.',
+    'auth/user-not-found':'Aucun compte avec cet email.',
+    'auth/invalid-credential':'Email ou mot de passe incorrect.',
+    'auth/too-many-requests':'Trop de tentatives. Réessaie plus tard.',
+  };
+  return map[code] || 'Erreur : ' + code;
+}
+
+// ── AUTH STATE ──
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    // Register device session (simple, no blocking)
+    try {
+      const sessionRef = doc(db, 'sessions', user.uid + '_' + DEVICE_ID);
+      const sessionsQuery = query(collection(db,'sessions'), where('uid','==',user.uid));
+      const existing = await getDocs(sessionsQuery);
+      const otherSessions = existing.docs.filter(d => d.id !== user.uid + '_' + DEVICE_ID);
+      if (otherSessions.length >= MAX_DEVICES) {
+        document.getElementById('device-warning').style.display = 'block';
+        document.getElementById('auth-loading').style.display = 'none';
+        await signOut(auth);
+        return;
+      }
+      await setDoc(sessionRef, { uid: user.uid, deviceId: DEVICE_ID, lastSeen: serverTimestamp() });
+    } catch(sessionErr) {
+      // Session check failed silently — still allow login
+      console.warn('Session check skipped:', sessionErr.message);
+    }
+
+    currentUser = user;
+    const pseudo = user.displayName || user.email.split('@')[0];
+    currentUserData = { pseudo, uid: user.uid };
+
+    // Show app
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+
+    // Setup header
+    const colors = ['#00FF88','#F5C842','#FF3B5C','#627EEA','#9945FF','#F7931A','#4CA3FF','#00E5FF'];
+    const color = colors[pseudo.charCodeAt(0) % colors.length];
+    const av = document.getElementById('header-avatar');
+    av.textContent = pseudo.slice(0,2).toUpperCase();
+    av.style.background = color + '22';
+    av.style.color = color;
+    document.getElementById('header-username').textContent = pseudo;
+    // Show MEMBRES tab automatically for admin email
+    if (user.email === ADMIN_EMAIL) {
+      const mb = document.getElementById('admin-page-btn');
+      if (mb) mb.style.display = 'flex';
+    }
+
+    // Init
+    initGaugeArcs();
+    updateGauge(0);
+    initChat();
+    listenSignalData();
+    fetchPrices();
+    setInterval(fetchPrices, 60000);
+
+  } else {
+    currentUser = null;
+    currentUserData = null;
+    document.getElementById('auth-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('auth-loading').style.display = 'none';
+    if (chatUnsub) { chatUnsub(); chatUnsub = null; }
+  }
+});
+
+// ── FIRESTORE SIGNAL DATA (real-time sync for all users) ──
+function listenSignalData() {
+  onSnapshot(doc(db, 'signal', 'data'), (snap) => {
+    if (snap.exists()) {
+      const d = snap.data();
+      signalData.btb = d.btb ?? 0;
+      signalData.cryptos = d.cryptos ?? signalData.cryptos;
+      updateGauge(signalData.btb);
+      buildRSPS(signalData.cryptos);
+    } else {
+      // First time — create default doc
+      setDoc(doc(db,'signal','data'), signalData);
+      updateGauge(0);
+      buildRSPS(signalData.cryptos);
+    }
+  });
+}
+
+async function saveSignalData() {
+  try {
+    await setDoc(doc(db,'signal','data'), signalData);
+  } catch(e) { console.error('Save error:', e); }
+}
+
+// ── SHOW MEMBERS TAB ──
+function showMembersTab() {
+  const btn = document.getElementById('admin-page-btn');
+  if (btn) { btn.style.display = 'flex'; btn.style.color = 'var(--gold)'; }
+}
+
+// ── ADMIN PANEL ──
+window.toggleAdminPanel = function() {
+  const panel = document.getElementById('admin-panel');
+  const visible = panel.style.display !== 'none';
+  if (!adminUnlocked) {
+    panel.style.display = visible ? 'none' : 'flex';
+    return;
+  }
+  panel.style.display = visible ? 'none' : 'flex';
+};
+
+window.checkAdminPin = function() {
+  const inp = document.getElementById('admin-pin-input');
+  if (inp.value === ADMIN_PIN) {
+    adminUnlocked = true;
+    document.getElementById('admin-pin-section').style.display = 'none';
+    document.getElementById('admin-controls').style.display = 'block';
+    renderAdminControls();
+    inp.value = '';
+  } else {
+    inp.style.borderColor = 'var(--red)';
+    inp.value = '';
+    setTimeout(() => inp.style.borderColor = '', 1000);
+  }
+};
+
+function renderAdminControls() {
+  // BTB slider
+  document.getElementById('admin-btb-val').value = signalData.btb;
+  document.getElementById('admin-btb-display').textContent = signalData.btb.toFixed(2);
+
+  // RSPS scores
+  const list = document.getElementById('admin-rsps-inputs');
+  list.innerHTML = '';
+  signalData.cryptos.forEach((c, i) => {
+    const meta = cryptoMeta[c.name] || { color:'#F5C842' };
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:8px';
+    row.innerHTML = `
+      <span style="font-family:var(--fm);font-size:12px;color:${meta.color};width:52px;letter-spacing:1px">${c.name}</span>
+      <input type="range" min="0" max="50" value="${c.score}" style="flex:1" 
+        oninput="updateCryptoScore(${i}, this.value); document.getElementById('score-disp-${i}').textContent=this.value"/>
+      <span id="score-disp-${i}" style="font-family:var(--fm);font-size:13px;color:var(--gold);width:28px;text-align:right">${c.score}</span>`;
+    list.appendChild(row);
+  });
+}
+
+window.updateCryptoScore = function(i, val) {
+  signalData.cryptos[i].score = parseInt(val);
+};
+
+window.applyAdminChanges = async function() {
+  const btbVal = parseFloat(document.getElementById('admin-btb-val').value);
+  signalData.btb = btbVal;
+  await saveSignalData();
+  document.getElementById('admin-save-msg').style.display = 'block';
+  setTimeout(() => document.getElementById('admin-save-msg').style.display = 'none', 2000);
+};
+
+// ── GAUGE ──
+function ptc(cx, cy, r, deg) {
+  const rad = (deg - 90) * Math.PI / 180;
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+function arc(cx, cy, r, s, e) {
+  const sp = ptc(cx,cy,r,s), ep = ptc(cx,cy,r,e);
+  return `M ${sp.x} ${sp.y} A ${r} ${r} 0 ${e-s>180?1:0} 1 ${ep.x} ${ep.y}`;
+}
+function initGaugeArcs() {
+  // Vertical bar — no arc init needed
+}
+function updateGauge(val) {
+  // Vertical bar animation — track is 300px, center at 150px
+  const bar = document.getElementById('btb-fill');
+  const marker = document.getElementById('btb-marker');
+  const dot = document.getElementById('btb-sync-dot');
+  if (bar && marker) {
+    const TRACK = 300;   // total track height px
+    const CENTER = 145;  // top of center line (50% - 5px for marker half-height)
+    const HALF = 142;    // usable half = CENTER - margin
+    const cval = Math.max(-1, Math.min(1, isNaN(val) ? 0 : val));
+    // Marker position: +1 => top:3px, 0 => top:145px, -1 => top:287px
+    const mTop = CENTER - Math.round(cval * HALF);
+    marker.style.top = mTop + 'px';
+    if (cval > 0) {
+      const fh = Math.round(cval * HALF);
+      bar.style.top = (CENTER - fh) + 'px';
+      bar.style.height = fh + 'px';
+      bar.style.background = 'rgba(0,255,136,0.55)';
+      marker.style.background = '#00FF88';
+      marker.style.boxShadow = '0 0 14px rgba(0,255,136,0.9)';
+      if (dot) dot.style.background = '#00FF88';
+    } else if (cval < 0) {
+      const fh = Math.round(Math.abs(cval) * HALF);
+      bar.style.top = (CENTER + 10) + 'px';
+      bar.style.height = fh + 'px';
+      bar.style.background = 'rgba(255,59,92,0.55)';
+      marker.style.background = '#FF3B5C';
+      marker.style.boxShadow = '0 0 14px rgba(255,59,92,0.9)';
+      if (dot) dot.style.background = '#FF3B5C';
+    } else {
+      bar.style.height = '0px';
+      marker.style.background = '#F5C842';
+      marker.style.boxShadow = '0 0 14px rgba(245,200,66,0.9)';
+      if (dot) dot.style.background = '#F5C842';
+    }
+  }
+
+  const numEl = document.getElementById('gauge-number');
+  const lblEl = document.getElementById('gauge-label');
+  const vEl   = document.getElementById('gauge-verdict');
+  const aEl   = document.getElementById('signal-alert');
+  numEl.textContent = isNaN(val) ? '-' : val.toFixed(2);
+
+  if (val > 0) {
+    numEl.style.color='#00FF88'; lblEl.textContent='ACHETER'; lblEl.style.color='#00FF88';
+    vEl.textContent='BTB POSITIF - MARCHÉ HAUSSIER'; vEl.style.cssText='background:rgba(0,255,136,.12);color:#00FF88;border:1px solid rgba(0,255,136,.3);display:inline-block;font-family:var(--fm);font-size:11px;letter-spacing:2px;padding:7px 18px;border-radius:4px;margin-top:.5rem;font-weight:700;text-align:center';
+    aEl.style.cssText='background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.3);color:#00FF88;padding:.9rem 1.25rem;border-radius:10px;display:flex;align-items:center;gap:14px;margin-bottom:1.5rem;font-family:Space Mono,monospace;font-size:12px;letter-spacing:1px';
+    aEl.innerHTML='<span style="font-family:var(--fm);font-size:11px;color:var(--green);letter-spacing:2px">HAUSSIER</span><span>BTB <strong>positif</strong> - Marché haussier. Achète la crypto #1 du Buder Moon Chaser.</span>';
+  } else if (val < 0) {
+    numEl.style.color='#FF3B5C'; lblEl.textContent='VENDRE'; lblEl.style.color='#FF3B5C';
+    vEl.textContent='BTB NÉGATIF - RESTE EN CASH'; vEl.style.cssText='background:rgba(255,59,92,.12);color:#FF3B5C;border:1px solid rgba(255,59,92,.3);display:inline-block;font-family:var(--fm);font-size:11px;letter-spacing:2px;padding:7px 18px;border-radius:4px;margin-top:.5rem;font-weight:700;text-align:center';
+    aEl.style.cssText='background:rgba(255,59,92,.08);border:1px solid rgba(255,59,92,.3);color:#FF3B5C;padding:.9rem 1.25rem;border-radius:10px;display:flex;align-items:center;gap:14px;margin-bottom:1.5rem;font-family:Space Mono,monospace;font-size:12px;letter-spacing:1px';
+    aEl.innerHTML='<span style="font-family:var(--fm);font-size:11px;color:var(--red);letter-spacing:2px">BAISSIER</span><span>BTB <strong>négatif</strong> - Marché baissier. Reste en cash ou prends tes profits.</span>';
+  } else {
+    numEl.style.color='#F5C842'; lblEl.textContent='- NEUTRE'; lblEl.style.color='#F5C842';
+    vEl.textContent='EN ATTENTE DE SIGNAL'; vEl.style.cssText='background:rgba(245,200,66,.1);color:#F5C842;border:1px solid rgba(245,200,66,.3);display:inline-block;font-family:var(--fm);font-size:11px;letter-spacing:2px;padding:7px 18px;border-radius:4px;margin-top:.5rem;font-weight:700;text-align:center';
+    aEl.style.cssText='background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.2);color:#F5C842;padding:.9rem 1.25rem;border-radius:10px;display:flex;align-items:center;gap:14px;margin-bottom:1.5rem;font-family:Space Mono,monospace;font-size:12px;letter-spacing:1px';
+    aEl.innerHTML='<span style="font-family:var(--fm);font-size:11px;color:var(--gold);letter-spacing:2px">NEUTRE</span><span>BTB à <strong>zéro</strong> - Pas de signal clair. Patience.</span>';
+  }
+}
+
+// ── RSPS ──
+function buildRSPS(data) {
+  const sorted = [...data].sort((a,b) => b.score - a.score);
+  const max = sorted[0]?.score || 1;
+  const medals = ['01','02','03'];
+  const list = document.getElementById('rsps-list');
+  list.innerHTML = '';
+  sorted.forEach((c, i) => {
+    const meta = cryptoMeta[c.name] || { fullName: c.name, color:'#F5C842', geckoId:'' };
+    const pct = (c.score / max) * 100;
+    const row = document.createElement('div');
+    row.className = 'rsps-row' + (i===0?' r1':i===1?' r2':i===2?' r3':'');
+    row.innerHTML = `
+      <div class="rsps-rank">${medals[i]||`<span style="font-family:var(--fm);font-size:10px;color:var(--muted)">#${i+1}</span>`}</div>
+      <div class="rsps-info">
+        <div class="rsps-name" style="color:${meta.color}">${c.name}</div>
+        <div class="rsps-full">${meta.fullName}</div>
+      </div>
+      <div class="rsps-bar-wrap"><div class="rsps-bar" style="width:${pct}%;background:${meta.color};opacity:.85"></div></div>
+      <div class="rsps-score" style="color:${meta.color}">${c.score}</div>`;
+    list.appendChild(row);
+  });
+  if (sorted.length > 0) {
+    document.getElementById('winner-name').textContent = sorted[0].name;
+    document.getElementById('winner-sub').textContent = `${cryptoMeta[sorted[0].name]?.fullName||sorted[0].name} mène avec ${sorted[0].score} pts - C'est lui qu'on achète !`;
+  }
+}
+
+// ── PRICES ──
+async function fetchPrices() {
+  try {
+    const ids = Object.values(cryptoMeta).map(m=>m.geckoId).join(',');
+    const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    renderTicker(d);
+    renderMarquee(d);
+  } catch(e) { renderMarqueeStatic(); }
+}
+function renderTicker(d) {
+  const items = Object.entries(cryptoMeta).slice(0,5).map(([sym,m]) => {
+    const data = d[m.geckoId];
+    if (!data) return '';
+    const chg = data.usd_24h_change;
+    if (chg === undefined) return '';
+    const sign = chg >= 0 ? '+' : '';
+    const cls = chg >= 0 ? 'up' : 'dn';
+    const px = data.usd >= 1 ? data.usd.toLocaleString('en-US',{maximumFractionDigits:2}) : data.usd.toFixed(4);
+    return `<div class="ticker-item" style="color:var(--muted)">${sym} $${px} <span class="${cls}">${sign}${chg.toFixed(2)}%</span></div>`;
+  }).filter(Boolean);
+  document.getElementById('header-ticker').innerHTML = items.join('');
+}
+function renderMarquee(d) {
+  const items = Object.entries(cryptoMeta).map(([sym,m]) => {
+    const data = d[m.geckoId];
+    if (!data) return `<span class="marquee-item"><span class="sym">${sym}</span></span>`;
+    const chg = data.usd_24h_change;
+    const sign = chg >= 0 ? '+' : '';
+    const cls = chg >= 0 ? 'up' : 'dn';
+    const px = data.usd >= 1 ? data.usd.toLocaleString('en-US',{maximumFractionDigits:2}) : data.usd.toFixed(4);
+    return `<span class="marquee-item"><span class="sym">${sym}</span> $${px} <span class="${cls}">${sign}${chg.toFixed(2)}%</span></span>`;
+  });
+  const html = [...items,...items].join('');
+  document.getElementById('marquee-track').innerHTML = html;
+}
+function renderMarqueeStatic() {
+  const items = Object.keys(cryptoMeta).map(s=>`<span class="marquee-item"><span class="sym">${s}</span></span>`);
+  document.getElementById('marquee-track').innerHTML = [...items,...items].join('');
+}
+
+// ── CHAT ──
+function initChat() {
+  if (chatUnsub) chatUnsub();
+  const q = query(collection(db,'messages'), orderBy('createdAt','asc'), limit(200));
+  chatUnsub = onSnapshot(q, (snap) => {
+    const container = document.getElementById('chat-messages');
+    container.innerHTML = '';
+    lastSenderId = null; lastSendTime = 0;
+
+    if (snap.empty) {
+      container.innerHTML = '<div style="text-align:center;padding:2rem;font-family:var(--fm);font-size:11px;color:var(--muted);letter-spacing:2px">Pas encore de messages - sois le premier.</div>';
+      return;
+    }
+
+    let lastDate = '';
+    snap.docs.forEach(docSnap => {
+      const msg = docSnap.data();
+      if (!msg.createdAt) return;
+
+      const ts = msg.createdAt.toDate();
+      const dateStr = ts.toLocaleDateString('fr',{day:'2-digit',month:'long',year:'numeric'}).toUpperCase();
+      if (dateStr !== lastDate) {
+        lastDate = dateStr;
+        const div = document.createElement('div');
+        div.className = 'chat-divider';
+        div.textContent = dateStr;
+        container.appendChild(div);
+        lastSenderId = null;
+      }
+
+      const timeStr = ts.toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'});
+      const isGrouped = msg.uid === lastSenderId && (ts.getTime() - lastSendTime) < 300000;
+
+      const pseudo = msg.pseudo || 'Anonyme';
+      const colors = ['#00FF88','#F5C842','#FF3B5C','#627EEA','#9945FF','#F7931A','#4CA3FF','#00E5FF'];
+      const color = colors[pseudo.charCodeAt(0) % colors.length];
+
+      if (!isGrouped) {
+        const group = document.createElement('div');
+        group.className = 'msg-group';
+        group.innerHTML = `
+          <div class="msg-avatar-col">
+            <div class="msg-avatar-img" style="background:${color}22;color:${color}">${pseudo.slice(0,2).toUpperCase()}</div>
+          </div>
+          <div class="msg-body">
+            <div class="msg-header-row">
+              <span class="msg-username" style="color:${color}">${escHtml(pseudo)}</span>
+              <span class="msg-timestamp">${timeStr}</span>
+            </div>
+            ${renderMsgContent(msg)}
+          </div>`;
+        container.appendChild(group);
+      } else {
+        const cont = document.createElement('div');
+        cont.className = 'msg-continuation';
+        cont.innerHTML = `
+          <div class="msg-time-hover">${timeStr}</div>
+          <div class="msg-body">${renderMsgContent(msg)}</div>`;
+        container.appendChild(cont);
+      }
+
+      lastSenderId = msg.uid;
+      lastSendTime = ts.getTime();
+    });
+
+    container.scrollTop = container.scrollHeight;
+  });
+}
+
+function renderMsgContent(msg) {
+  let html = '';
+  if (msg.text) {
+    html += `<div class="msg-text">${linkify(escHtml(msg.text))}</div>`;
+  }
+  if (msg.imageUrl) {
+    html += `<img class="msg-image" src="${msg.imageUrl}" alt="image" onclick="openLightbox('${msg.imageUrl}')"/>`;
+  }
+  if (msg.fileUrl && !msg.imageUrl) {
+    html += `<a class="msg-file" href="${msg.fileUrl}" target="_blank" download>
+      
+      <div class="msg-file-info">
+        <span class="msg-file-name">${escHtml(msg.fileName||'Fichier')}</span>
+        <span class="msg-file-size">${msg.fileSize||''}</span>
+      </div>
+    </a>`;
+  }
+  return html;
+}
+
+function linkify(text) {
+  return text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+}
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── IMAGE COMPRESSOR ──
+function compressImage(file, maxWidth, quality) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxWidth) { h = h * maxWidth / w; w = maxWidth; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── BASE64 HELPER ──
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── SEND MESSAGE ──
+window.sendMessage = async function() {
+  if (!currentUser) return;
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text && pendingFiles.length === 0) return;
+
+  const btn = document.getElementById('chat-send-btn');
+  btn.disabled = true;
+  input.value = '';
+  autoResize(input);
+
+  try {
+    if (pendingFiles.length > 0) {
+      for (const file of pendingFiles) {
+        const isImg = file.type.startsWith('image/');
+        const sizeStr = file.size > 1024*1024 ? (file.size/1024/1024).toFixed(1)+' MB' : Math.round(file.size/1024)+' KB';
+        const msgData = {
+          uid: currentUser.uid,
+          pseudo: currentUser.displayName || currentUser.email.split('@')[0],
+          createdAt: serverTimestamp(),
+          text: '',
+          fileName: file.name,
+          fileSize: sizeStr,
+        };
+        if (isImg) {
+          // Convert to base64 — no Storage needed
+          const b64 = await fileToBase64(file);
+          msgData.imageUrl = b64;
+        } else {
+          // For non-image files, store as base64 data URL for download
+          const b64 = await fileToBase64(file);
+          msgData.fileUrl = b64;
+          msgData.fileType = file.type;
+        }
+        await addDoc(collection(db,'messages'), msgData);
+      }
+      clearAttachments();
+    }
+    if (text) {
+      await addDoc(collection(db,'messages'), {
+        uid: currentUser.uid,
+        pseudo: currentUser.displayName || currentUser.email.split('@')[0],
+        text,
+        createdAt: serverTimestamp(),
+      });
+    }
+  } catch(e) {
+    console.error(e);
+  }
+  btn.disabled = false;
+};
+
+// ── FILE ATTACH ──
+window.handleFileAttach = function(files) {
+  for (const f of files) {
+    pendingFiles.push(f);
+  }
+  renderAttachPreview();
+  document.getElementById('chat-file-input').value = '';
+};
+
+function renderAttachPreview() {
+  const prev = document.getElementById('attach-preview');
+  prev.innerHTML = '';
+  pendingFiles.forEach((f, i) => {
+    const item = document.createElement('div');
+    item.className = 'attach-item';
+    if (f.type.startsWith('image/')) {
+      const url = URL.createObjectURL(f);
+      item.innerHTML = `<img class="attach-thumb" src="${url}"/><button class="attach-remove" onclick="removeAttach(${i})">x</button>`;
+    } else {
+      item.innerHTML = `<div class="attach-file-pill"><span>${escHtml(f.name)}</span></div><button class="attach-remove" onclick="removeAttach(${i})">x</button>`;
+    }
+    prev.appendChild(item);
+  });
+}
+
+window.removeAttach = function(i) {
+  pendingFiles.splice(i, 1);
+  renderAttachPreview();
+};
+
+function clearAttachments() {
+  pendingFiles = [];
+  document.getElementById('attach-preview').innerHTML = '';
+}
+
+// ── KEYBOARD ──
+window.handleChatKey = function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+};
+
+window.autoResize = function(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+};
+
+// ── LIGHTBOX ──
+window.openLightbox = function(url) {
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox').classList.add('open');
+};
+window.closeLightbox = function() {
+  document.getElementById('lightbox').classList.remove('open');
+};
+
+// ── NAV ──
+window.showPage = function(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'members') loadMembers();
+  if (id === 'analysis') initAnalysis();
+};
+
+// ── BUDERANALYSIS ──
+let analysisUnsub = null;
+let analysisPendingFiles = [];
+let analysisInited = false;
+
+function initAnalysis() {
+  // Show composer only for admin
+  if (currentUser && currentUser.email === ADMIN_EMAIL) {
+    document.getElementById('analysis-compose').style.display = 'block';
+  }
+  if (analysisInited) return;
+  analysisInited = true;
+
+  const q = query(collection(db, 'analyses'), orderBy('createdAt', 'desc'), limit(50));
+  analysisUnsub = onSnapshot(q, (snap) => {
+    const container = document.getElementById('analysis-posts');
+    if (snap.empty) {
+      container.innerHTML = '<div class="analysis-empty">Aucune analyse publiée pour l&#39;instant.</div>';
+      return;
+    }
+    container.innerHTML = '';
+    snap.forEach(docSnap => {
+      const a = docSnap.data();
+      const ts = a.createdAt ? a.createdAt.toDate() : new Date();
+      const dateStr = ts.toLocaleDateString('fr', {day:'2-digit', month:'long', year:'numeric'}) + ' - ' + ts.toLocaleTimeString('fr', {hour:'2-digit', minute:'2-digit'});
+      const tagClass = a.tag || 'neutral';
+      const tagLabels = {bullish:'HAUSSIER', bearish:'BAISSIER', neutral:'NEUTRE'};
+
+      const post = document.createElement('div');
+      post.className = 'analysis-post';
+      post.innerHTML =
+        '<div class="analysis-post-header">' +
+          '<div class="analysis-post-avatar">CB</div>' +
+          '<div class="analysis-post-meta">' +
+            '<div class="analysis-post-author">CRYPTOBUDER</div>' +
+            '<div class="analysis-post-date">' + escHtml(dateStr) + '</div>' +
+          '</div>' +
+          '<span class="analysis-tag ' + tagClass + '">' + (tagLabels[tagClass]||'NEUTRE') + '</span>' +
+        '</div>' +
+        '<div class="analysis-post-title">' + escHtml(a.title || '') + '</div>' +
+        '<div class="analysis-post-body">' + escHtml(a.body || '') + '</div>' +
+        (a.imageUrl ? '<img class="analysis-post-img" src="' + a.imageUrl + '" onclick="openLightbox('' + a.imageUrl + '')" alt=""/>' : '') +
+        (a.fileUrl && !a.imageUrl ? '<a class="analysis-post-file" href="' + a.fileUrl + '" target="_blank" download="' + escHtml(a.fileName||'fichier') + '">' +
+          '<div><div class="analysis-post-file-name">' + escHtml(a.fileName||'Fichier') + '</div><div class="analysis-post-file-size">' + escHtml(a.fileSize||'') + '</div></div>' +
+        '</a>' : '') +
+        (currentUser && currentUser.email === ADMIN_EMAIL ?
+          '<div style="margin-top:1rem;text-align:right"><button onclick="deleteAnalysis('' + docSnap.id + '')" style="background:transparent;border:1px solid rgba(255,59,92,.3);color:var(--red);font-family:var(--fm);font-size:9px;letter-spacing:2px;padding:4px 12px;border-radius:4px;cursor:pointer">SUPPRIMER</button></div>'
+        : '');
+      container.appendChild(post);
+    });
+  });
+}
+
+window.handleAnalysisFile = function(files) {
+  analysisPendingFiles = Array.from(files);
+  const prev = document.getElementById('analysis-attach-preview');
+  prev.innerHTML = '';
+  analysisPendingFiles.forEach(f => {
+    const item = document.createElement('div');
+    item.style.cssText = 'font-family:var(--fm);font-size:10px;color:var(--gold);background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:5px 10px';
+    item.textContent = f.name;
+    prev.appendChild(item);
+  });
+  document.getElementById('analysis-file-input').value = '';
+};
+
+window.publishAnalysis = async function() {
+  if (!currentUser || currentUser.email !== ADMIN_EMAIL) return;
+  const title = document.getElementById('analysis-title-input').value.trim();
+  const body = document.getElementById('analysis-body-input').value.trim();
+  const tag = document.getElementById('analysis-tag-select').value;
+  if (!title && !body) return;
+
+  const btn = document.querySelector('.analysis-publish-btn');
+  btn.textContent = 'PUBLICATION...';
+  btn.disabled = true;
+
+  const data = {
+    title, body, tag,
+    createdAt: serverTimestamp(),
+    authorEmail: currentUser.email,
+  };
+
+  if (analysisPendingFiles.length > 0) {
+    const file = analysisPendingFiles[0];
+    const isImg = file.type.startsWith('image/');
+    const sizeStr = file.size > 1024*1024 ? (file.size/1024/1024).toFixed(1)+' MB' : Math.round(file.size/1024)+' KB';
+    data.fileName = file.name;
+    data.fileSize = sizeStr;
+    if (isImg) {
+      const compressed = await compressImage(file, 1200, 0.85);
+      data.imageUrl = compressed;
+    } else {
+      const b64 = await fileToBase64(file);
+      data.fileUrl = b64;
+    }
+  }
+
+  try {
+    await addDoc(collection(db, 'analyses'), data);
+    document.getElementById('analysis-title-input').value = '';
+    document.getElementById('analysis-body-input').value = '';
+    document.getElementById('analysis-attach-preview').innerHTML = '';
+    analysisPendingFiles = [];
+  } catch(e) { console.error(e); }
+
+  btn.textContent = 'PUBLIER L'ANALYSE';
+  btn.disabled = false;
+};
+
+window.deleteAnalysis = async function(id) {
+  if (!currentUser || currentUser.email !== ADMIN_EMAIL) return;
+  if (!confirm('Supprimer cette analyse ?')) return;
+  try {
+    await deleteDoc(doc(db, 'analyses', id));
+  } catch(e) { console.error(e); }
+};
+
+// ── MEMBERS ADMIN PAGE ──
+let allMembers = [];
+
+async function loadMembers() {
+  try {
+    const q = query(collection(db,'users'), orderBy('createdAt','desc'));
+    const snap = await getDocs(q);
+    allMembers = [];
+    snap.forEach(d => {
+      allMembers.push({ id: d.id, ...d.data() });
+    });
+    renderMembers(allMembers);
+  } catch(e) {
+    console.error('Load members error:', e);
+    document.getElementById('members-list').innerHTML =
+      '<div style="text-align:center;padding:2rem;font-family:var(--fm);font-size:11px;color:var(--red)">Erreur chargement membres</div>';
+  }
+}
+
+function renderMembers(members) {
+  const list = document.getElementById('members-list');
+  const colors = ['#00FF88','#F5C842','#FF3B5C','#627EEA','#9945FF','#F7931A','#4CA3FF','#00E5FF'];
+  const today = new Date(); today.setHours(0,0,0,0);
+  const weekAgo = new Date(Date.now() - 7*24*60*60*1000);
+  let todayCount = 0, weekCount = 0;
+
+  if (members.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:2rem;font-family:var(--fm);font-size:11px;color:var(--muted)">Aucun membre trouvé</div>';
+    return;
+  }
+
+  list.innerHTML = members.map(function(m, i) {
+    var pseudo = m.pseudo || 'Inconnu';
+    var email = m.email || '-';
+    var color = colors[pseudo.charCodeAt(0) % colors.length];
+    var dateStr = '-';
+    var ts = null;
+    if (m.createdAt) {
+      if (m.createdAt.toDate) ts = m.createdAt.toDate();
+      else if (typeof m.createdAt === 'number') ts = new Date(m.createdAt);
+      if (ts) {
+        dateStr = ts.toLocaleDateString('fr', {day:'2-digit', month:'short', year:'numeric'});
+        if (ts >= today) todayCount++;
+        if (ts >= weekAgo) weekCount++;
+      }
+    }
+    return '<div class="member-row">' +
+      '<div class="member-num">' + (i+1) + '</div>' +
+      '<div class="member-pseudo">' +
+        '<div class="member-avatar-sm" style="background:' + color + '22;color:' + color + '">' + pseudo.slice(0,2).toUpperCase() + '</div>' +
+        escHtml(pseudo) +
+      '</div>' +
+      '<div class="member-email">' + escHtml(email) + '</div>' +
+      '<div class="member-date">' + dateStr + '</div>' +
+    '</div>';
+  }).join('');
+
+  document.getElementById('stat-today').textContent = todayCount;
+  document.getElementById('stat-week').textContent = weekCount;
+  document.getElementById('stat-total').textContent = members.length;
+}
+
+window.filterMembers = function(searchTerm) {
+  const q = searchTerm.toLowerCase();
+  const filtered = allMembers.filter(function(m) {
+    return (m.pseudo||'').toLowerCase().includes(q) ||
+           (m.email||'').toLowerCase().includes(q);
+  });
+  renderMembers(filtered);
+};
+
+</script>
+</body>
+</html>
