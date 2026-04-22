@@ -1381,12 +1381,12 @@ function initAnalysis() {
         '</div>' +
         '<div class="analysis-post-title">' + escHtml(a.title || '') + '</div>' +
         '<div class="analysis-post-body">' + escHtml(a.body || '') + '</div>' +
-        (a.imageUrl ? '<img class="analysis-post-img" src="' + a.imageUrl + '" onclick="openLightbox('' + a.imageUrl + '')" alt=""/>' : '') +
+        (a.imageUrl ? '<img class="analysis-post-img" src="' + a.imageUrl + '" onclick="openLightbox(this.src)" alt=""/>' : '') +
         (a.fileUrl && !a.imageUrl ? '<a class="analysis-post-file" href="' + a.fileUrl + '" target="_blank" download="' + escHtml(a.fileName||'fichier') + '">' +
           '<div><div class="analysis-post-file-name">' + escHtml(a.fileName||'Fichier') + '</div><div class="analysis-post-file-size">' + escHtml(a.fileSize||'') + '</div></div>' +
         '</a>' : '') +
         (currentUser && currentUser.email === ADMIN_EMAIL ?
-          '<div style="margin-top:1rem;text-align:right"><button onclick="deleteAnalysis('' + docSnap.id + '')" style="background:transparent;border:1px solid rgba(255,59,92,.3);color:var(--red);font-family:var(--fm);font-size:9px;letter-spacing:2px;padding:4px 12px;border-radius:4px;cursor:pointer">SUPPRIMER</button></div>'
+          '<div style="margin-top:1rem;text-align:right"><button onclick="deleteAnalysis(&quot;' + docSnap.id + '&quot;)" style="background:transparent;border:1px solid rgba(255,59,92,.3);color:var(--red);font-family:var(--fm);font-size:9px;letter-spacing:2px;padding:4px 12px;border-radius:4px;cursor:pointer">SUPPRIMER</button></div>'
         : '');
       container.appendChild(post);
     });
